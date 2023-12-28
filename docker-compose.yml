@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  rs-tree-db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=rs-tree
+      - POSTGRES_PASSWORD=rs-tree
+      - POSTGRES_DB=rs-tree
+    ports:
+      - 5432:5432
+    volumes:
+      - rs-tree-db:/var/lib/postgresql/data
+
+volumes:
+  rs-tree-db:
