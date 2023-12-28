@@ -1,3 +1,4 @@
+use actix_session::Session;
 use actix_web::{
     delete, get, post,
     web::{Path, ServiceConfig},
@@ -12,21 +13,21 @@ pub fn config(cfg: &mut ServiceConfig) {
 }
 
 #[get("/resolve/{id}")]
-async fn resolve(_id: Path<String>) -> impl Responder {
+async fn resolve(_id: Path<String>, _session: Session) -> impl Responder {
     HttpResponse::Ok()
 }
 
 #[post("/create/{id}")]
-async fn create(_id: Path<String>) -> impl Responder {
+async fn create(_id: Path<String>, _session: Session) -> impl Responder {
     HttpResponse::Ok()
 }
 
 #[post("/create")]
-async fn create_anon() -> impl Responder {
+async fn create_anon(_session: Session) -> impl Responder {
     HttpResponse::Ok()
 }
 
 #[delete("/delete/{id}")]
-async fn delete(_id: Path<String>) -> impl Responder {
+async fn delete(_id: Path<String>, _session: Session) -> impl Responder {
     HttpResponse::Ok()
 }
