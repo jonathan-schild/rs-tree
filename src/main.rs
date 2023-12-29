@@ -4,7 +4,7 @@ use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
     cookie::Key,
     middleware::{Compress, Logger, NormalizePath, TrailingSlash},
-    web::Data,
+    web::{scope, Data},
     App, HttpServer,
 };
 use migration::{Migrator, MigratorTrait};
@@ -45,8 +45,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .wrap(NormalizePath::new(TrailingSlash::Trim))
             .app_data(Data::new(db_connection.clone()))
+            .service(scope("/user").configure(user_management::config))
             .configure(url_management::config)
-            .configure(user_management::config)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

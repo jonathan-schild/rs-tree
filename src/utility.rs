@@ -3,7 +3,7 @@ use pbkdf2::{
     Pbkdf2,
 };
 
-pub fn _hash_password(password: &String) -> String {
+pub fn hash_password(password: &String) -> String {
     let salt = SaltString::generate(&mut OsRng);
     Pbkdf2
         .hash_password(password.as_bytes(), &salt)

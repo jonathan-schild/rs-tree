@@ -4,8 +4,12 @@ use actix_web::{
     web::{Data, Json, ServiceConfig},
     HttpResponse, Responder,
 };
-use sea_orm::DatabaseConnection;
+use entity::user;
+use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+use crate::utility::hash_password;
 
 pub fn config(cfg: &mut ServiceConfig) {
     cfg.service(create).service(login).service(logout);
@@ -23,9 +27,17 @@ struct LoginData {
 #[post("/create")]
 async fn create(
     _session: Session,
-    _data: Json<LoginData>,
-    _db: Data<DatabaseConnection>,
+    data: Json<LoginData>,
+    db: Data<DatabaseConnection>,
 ) -> impl Responder {
+    let user = user::ActiveModel {
+        id: ActiveValue::Set(Uuid::new_v4()),
+        user_name: ActiveValue::Set(data.user_name.clone()),
+        password_hash: ActiveValue::Set(Some(hash_password(&data.password))),
+    };
+
+    user.insert(db.as_ref()).await.unwrap();
+
     HttpResponse::Ok()
 }
 
