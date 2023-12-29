@@ -5,7 +5,7 @@ edition = "2021"
 license = "MIT"
 
 [workspace]
-members = [".", "entity", "migration"]
+members = [".", "entity", "migration", "pwdpbkdf2"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -19,8 +19,7 @@ entity = { path = "entity" }
 env_logger = "0.10.1"
 log = "0.4.20"
 migration = { path = "migration" }
-pbkdf2 = { version = "0.12", features = ["simple"] }
-rand_core = { version = "0.6", features = ["std"] }
+pwdpbkdf2 = { path = "pwdpbkdf2" }
 sea-orm = { version = "0.12.10", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
 serde_json = "1.0.108"
 serde = { version = "1.0.193", features = ["derive"] }

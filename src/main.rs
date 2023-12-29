@@ -1,4 +1,7 @@
+// #![warn(clippy::cargo)]
 #![warn(clippy::pedantic)]
+// #![warn(clippy::missing_docs_in_private_items)]
+// #![warn(missing_docs)]
 
 use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
@@ -30,11 +33,9 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Cannot connect to Database!");
 
-    if false {
-        Migrator::up(&db_connection, None)
-            .await
-            .expect("Migrations failed!");
-    }
+    Migrator::up(&db_connection, None)
+        .await
+        .expect("Migrations failed!");
 
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
