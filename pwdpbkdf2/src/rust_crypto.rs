@@ -20,11 +20,27 @@ pub fn hash_password(password: &String) -> String {
         .to_string()
 }
 
-pub fn verify_password(password: &String, hash: String) -> bool {
+pub fn verify_password(password: &String, hash: &String) -> bool {
     match PasswordHash::new(&hash) {
         Ok(parsed_hash) => Pbkdf2
             .verify_password(password.as_bytes(), &parsed_hash)
             .is_ok(),
         Err(_) => false,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{hash_password, verify_password};
+
+    #[test]
+    fn test() {
+        let password1 = "Passw0rt!23";
+        let hash1 = hash_password(&password1.to_owned());
+
+        let password2 = "Passw0rt!23X";
+
+        assert!(verify_password(&password1.to_owned(), &hash1));
+        assert!(!verify_password(&password2.to_owned(), &hash1));
     }
 }

@@ -10,6 +10,6 @@ pub fn hash_password(password: &String) -> String {
     ring::hash_password(password)
 }
 
-pub fn verify_password(password: &String, hash: String) -> bool {
+pub fn verify_password(password: &String, hash: &String) -> bool {
     ring::verify_password(password, hash)
 }
