@@ -5,7 +5,7 @@ edition = "2021"
 license = "MIT"
 
 [workspace]
-members = [".", "migration"]
+members = [".", "entity", "migration"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -15,16 +15,16 @@ actix-web = "4.4.1"
 anyhow = "1.0.77"
 daemonize = "0.5.0"
 dotenv = "0.15.0"
+entity = { path = "entity" }
 env_logger = "0.10.1"
 log = "0.4.20"
+migration = { path = "migration" }
+pbkdf2 = { version = "0.12", features = ["simple"] }
+rand_core = { version = "0.6", features = ["std"] }
 sea-orm = { version = "0.12.10", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
-serde = { version = "1.0.193", features = ["derive"] }
 serde_json = "1.0.108"
+serde = { version = "1.0.193", features = ["derive"] }
 serde_yaml = "0.9.29"
 thiserror = "1.0.52"
 tokio = { version = "1.35.1", features = ["full"] }
 uuid = { version = "1.6.1", features = ["v4", "fast-rng"] }
-# entity = { path = "entity" }
-migration = { path = "migration" }
-pbkdf2 = { version = "0.12", features = ["simple"] }
-rand_core = { version = "0.6", features = ["std"] }
