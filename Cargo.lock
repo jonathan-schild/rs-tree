@@ -2351,6 +2351,7 @@ dependencies = [
 name = "pwdpbkdf2"
 version = "0.1.0"
 dependencies = [
+ "base64 0.21.5",
  "pbkdf2",
  "rand_core",
  "ring 0.17.7",

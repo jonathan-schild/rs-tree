@@ -5,6 +5,8 @@ use actix_web::{
     HttpResponse, Responder,
 };
 use entity::user;
+use log::info;
+use pwdpbkdf2::hash_password;
 use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -24,19 +26,37 @@ struct LoginData {
 
 #[post("/create")]
 async fn create(
-    _session: Session,
+    session: Session,
     data: Json<LoginData>,
     db: Data<DatabaseConnection>,
 ) -> impl Responder {
-    let user = user::ActiveModel {
-        id: ActiveValue::Set(Uuid::new_v4()),
-        user_name: ActiveValue::Set(data.user_name.clone()),
-        password_hash: ActiveValue::Set(Some(data.password.clone())),
-    };
+    if session
+        .get::<bool>("logged_in")
+        .is_ok_and(|b| b.is_some_and(|b| b))
+    {
+        let hash = hash_password(&data.password);
 
-    user.insert(db.as_ref()).await.unwrap();
+        info!(
+            "try to create user: {} authorized by {}",
+            &data.user_name, &hash
+        );
 
-    HttpResponse::Ok()
+        let user = user::ActiveModel {
+            id: ActiveValue::Set(Uuid::new_v4()),
+            user_name: ActiveValue::Set(data.user_name.clone()),
+            password_hash: ActiveValue::Set(Some(hash)),
+        };
+
+        if user.insert(db.as_ref()).await.is_ok() {
+            info!("user: {} created", &data.user_name);
+
+            HttpResponse::Ok()
+        } else {
+            HttpResponse::BadRequest()
+        }
+    } else {
+        HttpResponse::Unauthorized()
+    }
 }
 
 #[post("/login")]
