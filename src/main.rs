@@ -7,6 +7,7 @@ use actix_web::{
     web::Data,
     App, HttpServer,
 };
+use migration::{Migrator, MigratorTrait};
 use sea_orm::Database;
 
 mod url_management;
