@@ -1,6 +1,13 @@
+#![warn(clippy::pedantic)]
+
 use actix_session::{storage::RedisSessionStore, SessionMiddleware};
-use actix_web::{cookie::Key, middleware::Logger, web::Data, App, HttpServer};
-use sqlx::postgres::PgPoolOptions;
+use actix_web::{
+    cookie::Key,
+    middleware::{Compress, Logger, NormalizePath, TrailingSlash},
+    web::Data,
+    App, HttpServer,
+};
+use sea_orm::Database;
 
 mod url_management;
 mod user_management;
@@ -17,9 +24,7 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Cannot connect to Redis!");
 
-    let db_pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect("postgres://rs-tree:rs-tree@localhost/rs-tree")
+    let db_connection = Database::connect("postgres://rs-tree:rs-tree@localhost/rs-tree")
         .await
         .expect("Cannot connect to Database!");
 
@@ -27,9 +32,11 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .wrap(Compress::default())
             .wrap(SessionMiddleware::new(store.clone(), secret_key.clone()))
             .wrap(Logger::default())
-            .app_data(Data::new(db_pool.clone()))
+            .wrap(NormalizePath::new(TrailingSlash::Trim))
+            .app_data(Data::new(db_connection.clone()))
             .configure(url_management::config)
             .configure(user_management::config)
     })

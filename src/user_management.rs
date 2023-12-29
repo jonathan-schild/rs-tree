@@ -4,8 +4,8 @@ use actix_web::{
     web::{Data, Json, ServiceConfig},
     HttpResponse, Responder,
 };
+use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
-use sqlx::PgPool;
 
 pub fn config(cfg: &mut ServiceConfig) {
     cfg.service(login).service(logout);
@@ -18,11 +18,15 @@ struct LoginData {
 }
 
 #[post("/login")]
-async fn login(_session: Session, _data: Json<LoginData>, _db: Data<PgPool>) -> impl Responder {
+async fn login(
+    _session: Session,
+    _data: Json<LoginData>,
+    _db: Data<DatabaseConnection>,
+) -> impl Responder {
     HttpResponse::Ok()
 }
 
 #[post("/logout")]
-async fn logout(_session: Session, _db: Data<PgPool>) -> impl Responder {
+async fn logout(_session: Session, _db: Data<DatabaseConnection>) -> impl Responder {
     HttpResponse::Ok()
 }
