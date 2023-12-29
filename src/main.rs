@@ -12,6 +12,7 @@ use sea_orm::Database;
 
 mod url_management;
 mod user_management;
+mod utility;
 
 fn get_secret_key() -> Key {
     Key::generate()
@@ -28,6 +29,12 @@ async fn main() -> std::io::Result<()> {
     let db_connection = Database::connect("postgres://rs-tree:rs-tree@localhost/rs-tree")
         .await
         .expect("Cannot connect to Database!");
+
+    if false {
+        Migrator::up(&db_connection, None)
+            .await
+            .expect("Migrations failed!");
+    }
 
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
