@@ -16,7 +16,19 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(User::PasswordHash).string())
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        manager
+            .create_index(
+                IndexCreateStatement::new()
+                    .name("user-name-idx")
+                    .table(User::User)
+                    .col(User::UserName)
+                    .to_owned(),
+            )
+            .await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
