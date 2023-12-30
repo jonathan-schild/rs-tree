@@ -3,24 +3,32 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "user")]
+#[sea_orm(table_name = "tree_entry")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    #[sea_orm(unique)]
-    pub user_name: String,
-    pub password_hash: Option<String>,
+    pub name: String,
+    pub target: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::url::Entity")]
-    Url,
+    #[sea_orm(has_many = "super::tree::Entity")]
+    Tree,
+}
+
+impl Related<super::tree::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Tree.def()
+    }
 }
 
 impl Related<super::url::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Url.def()
+        super::tree::Relation::Url.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(super::tree::Relation::TreeEntry.def().rev())
     }
 }
 

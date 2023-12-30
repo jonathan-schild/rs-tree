@@ -26,7 +26,6 @@ impl MigrationTrait for Migration {
         manager
             .create_index(
                 IndexCreateStatement::new()
-                    .name("user-name-idx")
                     .table(User::User)
                     .col(User::UserName)
                     .to_owned(),
@@ -44,7 +43,7 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(DeriveIden)]
-enum User {
+pub enum User {
     User,
     Id,
     UserName,

@@ -2,4 +2,7 @@
 
 pub mod prelude;
 
+pub mod tree;
+pub mod tree_entry;
+pub mod url;
 pub mod user;
