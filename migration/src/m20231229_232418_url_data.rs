@@ -14,8 +14,10 @@ impl MigrationTrait for Migration {
                     .table(Url::Url)
                     .if_not_exists()
                     .col(ColumnDef::new(Url::Id).uuid().not_null().primary_key())
-                    .col(ColumnDef::new(Url::Short).string().not_null())
-                    .col(ColumnDef::new(Url::Target).string())
+                    .col(ColumnDef::new(Url::Name).string().not_null())
+                    .col(ColumnDef::new(Url::Short).string().unique_key().not_null())
+                    .col(ColumnDef::new(Url::Redirect).boolean().default(false))
+                    .col(ColumnDef::new(Url::MainPage).boolean().default(false))
                     .col(ColumnDef::new(Url::Author).uuid().not_null())
                     .foreign_key(
                         ForeignKey::create()
@@ -70,8 +72,16 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
+            .drop_table(Table::drop().table(Tree::Tree).to_owned())
+            .await?;
+        manager
             .drop_table(Table::drop().table(Url::Url).to_owned())
-            .await
+            .await?;
+        manager
+            .drop_table(Table::drop().table(TreeEntry::TreeEntry).to_owned())
+            .await?;
+
+        Ok(())
     }
 }
 
@@ -79,8 +89,10 @@ impl MigrationTrait for Migration {
 pub enum Url {
     Url,
     Id,
+    Name,
     Short,
-    Target,
+    Redirect,
+    MainPage,
     Author,
 }
 

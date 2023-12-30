@@ -7,8 +7,11 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
+    pub name: String,
+    #[sea_orm(unique)]
     pub short: String,
-    pub target: Option<String>,
+    pub redirect: Option<bool>,
+    pub main_page: Option<bool>,
     pub author: Uuid,
 }
 
