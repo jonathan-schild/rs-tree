@@ -1,0 +1,60 @@
+openapi: 3.0.1
+info:
+  title: rs-tree API
+  description: Link Tree...
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://raw.githubusercontent.com/jonathan-schild/rs-tree/main/LICENSE
+servers:
+  - url: http://localhost:8080/
+    description: Local development instance.
+tags:
+  - name: tree
+    description: link tree access
+  - name: user
+    description: user management
+paths:
+  /create:
+    post:
+      tags:
+        - tree
+      responses:
+        default:
+          description: ''
+  /create/{short}:
+    post:
+      tags:
+        - tree
+      parameters:
+        - $ref: "#/components/parameters/short"
+      responses:
+        default:
+          description: ''
+  /resolve/{short}:
+    get:
+      tags:
+        - tree
+      parameters:
+        - $ref: "#/components/parameters/short"
+      responses:
+        default:
+          description: ''
+  /delete/{short}:
+    delete:
+      tags:
+        - tree
+      parameters:
+        - $ref: "#/components/parameters/short"
+      responses:
+        default:
+          description: ''
+components:
+  parameters:
+    short:
+      name: short
+      in: path
+      description: ''
+      required: true
+      schema:
+        type: string
