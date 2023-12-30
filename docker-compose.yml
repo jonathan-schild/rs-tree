@@ -1,6 +1,21 @@
 version: '3'
 
 services:
+  # server:
+  #   build:
+  #     context: .
+  #     target: final
+  #   ports:
+  #     - 80:8080
+  #   depends_on:
+  #     rs-tree-db:
+  #       condition: service_healthy
+  #     rs-tree-session:
+  #       condition: service_healthy
+  api-devel:
+    image: swaggerapi/swagger-editor
+    ports:
+      - 8088:8080
   rs-tree-db:
     image: postgres
     environment:
@@ -11,14 +26,20 @@ services:
       - 5432:5432
     volumes:
       - rs-tree-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
   rs-tree-session:
     image: redis
     ports:
       - 6379:6379
     volumes:
       - rs-tree-session:/data
-
-
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 volumes:
   rs-tree-db:
   rs-tree-session:
