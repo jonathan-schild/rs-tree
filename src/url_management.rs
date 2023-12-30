@@ -12,12 +12,12 @@ pub fn config(cfg: &mut ServiceConfig) {
         .service(delete);
 }
 
-#[get("/resolve/{id}")]
+#[get("/resolve/{short}")]
 async fn resolve(_id: Path<String>, _session: Session) -> impl Responder {
     HttpResponse::Ok()
 }
 
-#[post("/create/{id}")]
+#[post("/create/{short}")]
 async fn create(_id: Path<String>, _session: Session) -> impl Responder {
     HttpResponse::Ok()
 }
@@ -27,7 +27,7 @@ async fn create_anon(_session: Session) -> impl Responder {
     HttpResponse::Ok()
 }
 
-#[delete("/delete/{id}")]
+#[delete("/delete/{short}")]
 async fn delete(_id: Path<String>, _session: Session) -> impl Responder {
     HttpResponse::Ok()
 }
