@@ -11,44 +11,107 @@ servers:
     description: Local development instance.
 tags:
   - name: tree
-    description: link tree access
+    description: ''
+  - name: tree-permissions
+    description: ''
   - name: user
-    description: user management
+    description: ''
 paths:
   /create:
     post:
       tags:
         - tree
+      summary: Create a new empty link tree entry and return a short link.
+      description: Create a new empty link tree entry and return a short link `short`.
       responses:
-        default:
-          description: ''
+        200:
+          description: 'New empty link tree entry `short` created.'
+          content:
+            application/json:
+              schema:
+                type: string
+                format: short
+              examples:
+                short:
+                  value: 'tuD120dA'
+        401:
+          description: 'Log in required.'
   /create/{short}:
     post:
       tags:
         - tree
+      summary: Create a new empty link tree entry with given short link.
+      description: Create a new empty link tree entry with given short link `short`.
       parameters:
         - $ref: "#/components/parameters/short"
       responses:
-        default:
-          description: ''
+        200:
+          description: 'New empty link tree entry `short` created.'
+          content:
+            application/json:
+              schema:
+                type: string
+                format: short
+              examples:
+                short:
+                  value: 'tuD120dA'
+        401:
+          description: 'Log in required.'
+        403:
+          description: 'Link tree entry `short` already exists.'
+  /update/{short}:
+    post:
+      tags:
+        - tree
+      summary: Update link tree entry.
+      description: Update link tree entry `short`.
+      parameters:
+        - $ref: "#/components/parameters/short"
+      responses:
+        200:
+          description: 'Link tree entry `short` updated.'
+        401:
+          description: 'Log in required.'
+        403:
+          description: 'No permission to update `short`.'
   /resolve/{short}:
     get:
       tags:
         - tree
+      summary: Get link tree entry.
+      description: Get link tree entry `short`.
       parameters:
         - $ref: "#/components/parameters/short"
       responses:
-        default:
-          description: ''
+        200:
+          description: 'New empty link tree entry `short` created.'
+          content:
+            application/json:
+              schema:
+                type: string
+                format: short
+              examples:
+                short:
+                  value: 'tuD120dA'
+        401:
+          description: 'Log in required.'
+        403:
+          description: 'No permission to get `short`.'
   /delete/{short}:
     delete:
       tags:
         - tree
+      summary: Delete link tree entry.
+      description: Delete link tree entry `short`.
       parameters:
         - $ref: "#/components/parameters/short"
       responses:
-        default:
-          description: ''
+        200:
+          description: 'Link tree entry `short` deleted.'
+        401:
+          description: 'Log in required.'
+        403:
+          description: 'No permission to delete `short`.'
 components:
   parameters:
     short:
