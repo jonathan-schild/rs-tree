@@ -5,8 +5,6 @@ services:
     build:
       context: .
       target: final
-    ports:
-      - 8080:8080
     environment:
       - DATABASE_URL=postgres://rs-tree:rs-tree@rs-tree-db/rs-tree
       - REDIS_URL=redis://rs-tree-session:6379
@@ -19,8 +17,21 @@ services:
         condition: service_healthy
   api-devel:
     image: swaggerapi/swagger-editor:latest
+    environment:
+     - BASE_URL=/api/devel
+    networks:
+      - dmz
+  proxy:
+    image: caddy:2.7-alpine
     ports:
-      - 80:8080
+      - "80:80"
+      - "80:80/udp"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./caddy:/etc/caddy
+      - proxy_data:/data
+      - proxy_config:/config
     networks:
       - dmz
   rs-tree-db:
@@ -50,5 +61,7 @@ services:
 volumes:
   rs-tree-db:
   rs-tree-session:
+  proxy_data:
+  proxy_config:
 networks:
   dmz:
