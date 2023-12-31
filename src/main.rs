@@ -7,11 +7,9 @@ use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
     cookie::Key,
     middleware::{Compress, Logger, NormalizePath, TrailingSlash},
-    web::{scope, Data},
+    web::scope,
     App, HttpServer,
 };
-use migration::{Migrator, MigratorTrait};
-use sea_orm::Database;
 
 mod url_management;
 mod user_management;
@@ -29,14 +27,6 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Cannot connect to Redis!");
 
-    let db_connection = Database::connect("postgres://rs-tree:rs-tree@localhost/rs-tree")
-        .await
-        .expect("Cannot connect to Database!");
-
-    Migrator::up(&db_connection, None)
-        .await
-        .expect("Migrations failed!");
-
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     HttpServer::new(move || {
@@ -45,7 +35,6 @@ async fn main() -> std::io::Result<()> {
             .wrap(SessionMiddleware::new(store.clone(), secret_key.clone()))
             .wrap(Logger::default())
             .wrap(NormalizePath::new(TrailingSlash::Trim))
-            .app_data(Data::new(db_connection.clone()))
             .service(scope("/user").configure(user_management::config))
             .configure(url_management::config)
     })
