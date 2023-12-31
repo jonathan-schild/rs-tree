@@ -9,7 +9,7 @@ use ring::{
 };
 
 #[must_use]
-pub fn hash_password(password: &String) -> String {
+pub fn hash_password(password: &str) -> String {
     let mut salt = [0u8; 16];
     let mut out = [0u8; 32];
 

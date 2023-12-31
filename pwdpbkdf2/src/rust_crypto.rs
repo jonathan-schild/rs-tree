@@ -3,7 +3,7 @@ use pbkdf2::{
     Algorithm, Params, Pbkdf2,
 };
 
-pub fn hash_password(password: &String) -> String {
+pub fn hash_password(password: &str) -> String {
     let salt = SaltString::generate(&mut OsRng);
     Pbkdf2
         .hash_password_customized(
@@ -21,7 +21,7 @@ pub fn hash_password(password: &String) -> String {
 }
 
 #[must_use]
-pub fn verify_password(password: &String, hash: &String) -> bool {
+pub fn verify_password(password: &str, hash: &str) -> bool {
     match PasswordHash::new(hash) {
         Ok(parsed_hash) => Pbkdf2
             .verify_password(password.as_bytes(), &parsed_hash)
