@@ -8,6 +8,7 @@ use ring::{
     rand::{SecureRandom, SystemRandom},
 };
 
+#[must_use]
 pub fn hash_password(password: &String) -> String {
     let mut salt = [0u8; 16];
     let mut out = [0u8; 32];
@@ -16,21 +17,22 @@ pub fn hash_password(password: &String) -> String {
 
     derive(
         PBKDF2_HMAC_SHA256,
-        NonZeroU32::new(600000).unwrap(),
+        NonZeroU32::new(600_000).unwrap(),
         &salt,
         password.as_bytes(),
         &mut out,
     );
 
     let mut ret = "pwdpbkdf$".to_owned();
-    general_purpose::STANDARD.encode_string(&salt, &mut ret);
+    general_purpose::STANDARD.encode_string(salt, &mut ret);
     ret.push('$');
-    general_purpose::STANDARD.encode_string(&out, &mut ret);
+    general_purpose::STANDARD.encode_string(out, &mut ret);
 
     ret
 }
 
-pub fn verify_password(password: &String, hash: &String) -> bool {
+#[must_use]
+pub fn verify_password(password: &str, hash: &str) -> bool {
     let spl: Vec<&str> = hash.split('$').collect();
 
     if spl.len() == 3 && spl[0] == "pwdpbkdf" {
@@ -39,7 +41,7 @@ pub fn verify_password(password: &String, hash: &String) -> bool {
 
         verify(
             PBKDF2_HMAC_SHA256,
-            NonZeroU32::new(600000).unwrap(),
+            NonZeroU32::new(600_000).unwrap(),
             &salt,
             password.as_bytes(),
             &hash,

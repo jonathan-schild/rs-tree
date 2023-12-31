@@ -11,7 +11,7 @@ pub fn hash_password(password: &String) -> String {
             Some(Algorithm::Pbkdf2Sha256.into()),
             None,
             Params {
-                rounds: 600000,
+                rounds: 600_000,
                 output_length: 32,
             },
             &salt,
@@ -20,8 +20,9 @@ pub fn hash_password(password: &String) -> String {
         .to_string()
 }
 
+#[must_use]
 pub fn verify_password(password: &String, hash: &String) -> bool {
-    match PasswordHash::new(&hash) {
+    match PasswordHash::new(hash) {
         Ok(parsed_hash) => Pbkdf2
             .verify_password(password.as_bytes(), &parsed_hash)
             .is_ok(),
