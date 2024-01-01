@@ -9,6 +9,7 @@ services:
       - DATABASE_URL=postgres://rs-tree:rs-tree@rs-tree-db/rs-tree
       - REDIS_URL=redis://rs-tree-session:6379
       - URL=/api
+      - COOKIE_KEY=f000NkKUxyoHeOxr+cPvkdADfyX0MBEqeZ12GsHjTyI3APe1WLuVizJUoDBDRNLYyC5y8SOk9tics/bxTL+etQ==
     networks:
       - dmz
     depends_on:

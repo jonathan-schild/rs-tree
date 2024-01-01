@@ -12,7 +12,7 @@ use actix_web::{
 };
 use base64::{engine::general_purpose, Engine};
 use dotenv::var;
-use log::{error, info, warn};
+use log::{debug, error, info, warn};
 
 mod db;
 mod url_management;
@@ -21,10 +21,11 @@ mod utility;
 
 fn read_secrete_key() -> Key {
     if let Ok(base64_key) = var("COOKIE_KEY") {
-        if let Ok(key_slice) = general_purpose::STANDARD.decode(base64_key) {
-            if let Ok(k) = Key::try_from(key_slice.as_slice()) {
+        if let Ok(key_slice) = general_purpose::STANDARD.decode(&base64_key) {
+            if let Ok(key) = Key::try_from(key_slice.as_slice()) {
+                debug! {"key: {}", base64_key}
                 info!("key loaded");
-                k
+                key
             } else {
                 let key = Key::generate();
                 error!(
