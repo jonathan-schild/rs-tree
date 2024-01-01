@@ -7,15 +7,15 @@ info:
     name: MIT
     url: https://raw.githubusercontent.com/jonathan-schild/rs-tree/main/LICENSE
 servers:
-  - url: http://localhost:8080/
+  - url: http://localhost/api
     description: Local development instance.
 tags:
   - name: tree
-    description: ''
+    description: ""
   - name: tree-permissions
-    description: ''
+    description: ""
   - name: user
-    description: ''
+    description: ""
 paths:
   /create:
     post:
@@ -24,8 +24,8 @@ paths:
       summary: Create a new empty link tree entry and return a short link.
       description: Create a new empty link tree entry and return a short link `short`.
       responses:
-        200:
-          description: 'New empty link tree entry `short` created.'
+        "200":
+          description: New empty link tree entry `short` created.
           content:
             application/json:
               schema:
@@ -33,9 +33,9 @@ paths:
                 format: short
               examples:
                 short:
-                  value: 'tuD120dA'
-        401:
-          description: 'Log in required.'
+                  value: tuD120dA
+        "401":
+          description: Log in required.
   /create/{short}:
     post:
       tags:
@@ -45,8 +45,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/short"
       responses:
-        200:
-          description: 'New empty link tree entry `short` created.'
+        "200":
+          description: New empty link tree entry `short` created.
           content:
             application/json:
               schema:
@@ -54,11 +54,11 @@ paths:
                 format: short
               examples:
                 short:
-                  value: 'tuD120dA'
-        401:
-          description: 'Log in required.'
-        403:
-          description: 'Link tree entry `short` already exists.'
+                  value: tuD120dA
+        "401":
+          description: Log in required.
+        "403":
+          description: Link tree entry `short` already exists.
   /update/{short}:
     post:
       tags:
@@ -68,12 +68,12 @@ paths:
       parameters:
         - $ref: "#/components/parameters/short"
       responses:
-        200:
-          description: 'Link tree entry `short` updated.'
-        401:
-          description: 'Log in required.'
-        403:
-          description: 'No permission to update `short`.'
+        "200":
+          description: Link tree entry `short` updated.
+        "401":
+          description: Log in required.
+        "403":
+          description: No permission to update `short`.
   /resolve/{short}:
     get:
       tags:
@@ -83,8 +83,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/short"
       responses:
-        200:
-          description: 'New empty link tree entry `short` created.'
+        "200":
+          description: New empty link tree entry `short` created.
           content:
             application/json:
               schema:
@@ -92,11 +92,11 @@ paths:
                 format: short
               examples:
                 short:
-                  value: 'tuD120dA'
-        401:
-          description: 'Log in required.'
-        403:
-          description: 'No permission to get `short`.'
+                  value: tuD120dA
+        "401":
+          description: Log in required.
+        "403":
+          description: No permission to get `short`.
   /delete/{short}:
     delete:
       tags:
@@ -106,18 +106,18 @@ paths:
       parameters:
         - $ref: "#/components/parameters/short"
       responses:
-        200:
-          description: 'Link tree entry `short` deleted.'
-        401:
-          description: 'Log in required.'
-        403:
-          description: 'No permission to delete `short`.'
+        "200":
+          description: Link tree entry `short` deleted.
+        "401":
+          description: Log in required.
+        "403":
+          description: No permission to delete `short`.
 components:
   parameters:
     short:
       name: short
       in: path
-      description: ''
+      description: ""
       required: true
       schema:
         type: string
