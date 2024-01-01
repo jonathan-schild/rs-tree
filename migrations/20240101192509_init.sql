@@ -42,6 +42,7 @@ CREATE TABLE "link_entry" (
     uuid uuid NOT NULL,
     name varchar(64) NOT NULL,
     redir_link TEXT default(NULL),
+    g_id serial NOT NULL REFERENCES "group" (id),
     UNIQUE (uuid),
     UNIQUE (name)
 );
@@ -49,7 +50,22 @@ CREATE TABLE "link_entry" (
 CREATE TABLE "link_tree_entry" (
     t_id serial NOT NULL REFERENCES "link_tree" (id),
     e_id serial NOT NULL REFERENCES "link_entry" (id),
+    g_id serial NOT NULL REFERENCES "group" (id),
     PRIMARY KEY (t_id, e_id)
 );
 
--- TODO ACL
+CREATE TABLE "entry_acl" (
+    e_id serial NOT NULL REFERENCES "link_entry" (id),
+    g_id serial NOT NULL REFERENCES "group" (id),
+    read bool default(false) NOT NULL,
+    write bool default(false) NOT NULL,
+    PRIMARY KEY (e_id, g_id)
+);
+
+CREATE TABLE "tree_acl" (
+    t_id serial NOT NULL REFERENCES "link_tree" (id),
+    g_id serial NOT NULL REFERENCES "group" (id),
+    read bool default(false) NOT NULL,
+    write bool default(false) NOT NULL,
+    PRIMARY KEY (t_id, g_id)
+);
