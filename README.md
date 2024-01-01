@@ -10,8 +10,8 @@ docker compose up -d --build
 
 - `http://localhost/api/<endpoint>`: Application API
 - <http://localhost/apidoc/>: [Swagger API Doc](https://swagger.io/tools/swagger-ui/)
-- <http://localhost/apidoc/openapi.yaml> [OpenAPI 3.0 Doc](https://swagger.io/specification/v3/)
-- <http://localhost/apidevel/> [Swagger Editor](https://swagger.io/tools/swagger-editor/)
+- <http://localhost/apidoc/openapi.yaml>: [OpenAPI 3.0 Doc](https://swagger.io/specification/v3/)
+- <http://localhost/apidevel/>: [Swagger Editor](https://swagger.io/tools/swagger-editor/)
 
 ## Environment Variables
 :rotating_light: **Change Default Passwords and Keys** :rotating_light:
