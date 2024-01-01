@@ -66,6 +66,9 @@ async fn main() -> std::io::Result<()> {
     info!("server port: {}", port);
     let port = port.parse().expect("parsing port failed");
 
+    let api_url = var("URL").expect("accessing environment failed");
+    info!("api url: {}", api_url);
+
     let secret_key = read_secrete_key();
 
     let store = RedisSessionStore::new(redis_connection_string)
@@ -78,8 +81,11 @@ async fn main() -> std::io::Result<()> {
             .wrap(SessionMiddleware::new(store.clone(), secret_key.clone()))
             .wrap(Logger::default())
             .wrap(NormalizePath::new(TrailingSlash::Trim))
-            .service(scope("/user").configure(user_management::config))
-            .configure(url_management::config)
+            .service(
+                scope(&api_url)
+                    .service(scope("/user").configure(user_management::config))
+                    .configure(url_management::config),
+            )
     })
     .bind(("0.0.0.0", port))?
     .run()
