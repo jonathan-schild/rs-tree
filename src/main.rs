@@ -13,7 +13,7 @@ use actix_web::{
 use base64::{engine::general_purpose, Engine};
 use dotenv::var;
 use log::{debug, error, info, warn};
-use sqlx::PgPool;
+use sqlx::{migrate, PgPool};
 
 mod db;
 mod url_management;
@@ -76,10 +76,18 @@ async fn main() -> std::io::Result<()> {
     let db = PgPool::connect(&postgres_connection_string)
         .await
         .expect("Cannot connect to PostgreSQL");
+    info!("connected to database");
+
+    migrate!("./migrations")
+        .run(&db)
+        .await
+        .expect("Cannot run migrations!");
+    info!("applied migrations");
 
     let store = RedisSessionStore::new(redis_connection_string)
         .await
         .expect("Cannot connect to Redis!");
+    info!("connected to session store");
 
     HttpServer::new(move || {
         App::new()

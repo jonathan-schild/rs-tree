@@ -40,6 +40,7 @@ RUN xx-apk add --no-cache musl-dev gcc
 # source code into the container. Once built, copy the executable to an
 # output directory before the cache mounted /app/target is unmounted.
 RUN --mount=type=bind,source=src,target=src \
+    --mount=type=bind,source=migrations,target=migrations \
     --mount=type=bind,source=pwdpbkdf2,target=pwdpbkdf2 \
     --mount=type=bind,source=Cargo.toml,target=Cargo.toml \
     --mount=type=bind,source=Cargo.lock,target=Cargo.lock \
