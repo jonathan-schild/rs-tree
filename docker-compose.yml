@@ -8,6 +8,7 @@ services:
     environment:
       - DATABASE_URL=postgres://rs-tree:rs-tree@rs-tree-db/rs-tree
       - REDIS_URL=redis://rs-tree-session:6379
+      - URL=/api
     networks:
       - dmz
     depends_on:
@@ -44,6 +45,8 @@ services:
       - dmz
   rs-tree-db:
     image: postgres
+    ports:
+      - 5432:5432
     environment:
       - POSTGRES_USER=rs-tree
       - POSTGRES_PASSWORD=rs-tree
@@ -60,6 +63,8 @@ services:
       start_period: 30s
   rs-tree-session:
     image: redis
+    ports:
+      - 6379:6379
     networks:
       - dmz
     volumes:
