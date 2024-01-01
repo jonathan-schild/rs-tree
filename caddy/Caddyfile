@@ -1,12 +1,20 @@
-http://localhost http://127.0.0.1 {
-	rewrite /api/devel /api/devel/
-	reverse_proxy /api/devel/* api-devel:8080
-	
-	rewrite /api/doc /api/doc/
-	respond /api/doc/* "I love tea!" 418
-	
-	rewrite /api /api/
-	reverse_proxy /api/* server:8080
-	
-	respond * "I love tea!" 418
+http://localhost, http://127.0.0.1 {
+	route {
+		handle /apidoc/openapi.yaml {
+			rewrite /apidoc/openapi.yaml /openapi.yaml
+			root /openapi.yaml /srv
+			file_server
+		}
+
+		redir /apidoc /apidoc/ permanent
+		reverse_proxy /apidoc/* api-doc:8080
+
+		redir /apidevel /apidevel/ permanent
+		reverse_proxy /apidevel/* api-devel:8080
+
+		rewrite /api /api/
+		reverse_proxy /api/* server:8080
+
+		respond * "I love tea!" 418
+	}
 }

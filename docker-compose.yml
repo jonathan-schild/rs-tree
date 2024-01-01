@@ -18,7 +18,14 @@ services:
   api-devel:
     image: swaggerapi/swagger-editor:latest
     environment:
-     - BASE_URL=/api/devel
+     - BASE_URL=/apidevel
+    networks:
+      - dmz
+  api-doc:
+    image: swaggerapi/swagger-ui:latest
+    environment:
+      - BASE_URL=/apidoc
+      - URL=/apidoc/openapi.yaml
     networks:
       - dmz
   proxy:
@@ -30,6 +37,7 @@ services:
       - "443:443/udp"
     volumes:
       - ./caddy:/etc/caddy
+      - ./doc/openapi.yaml:/srv/openapi.yaml
       - proxy_data:/data
       - proxy_config:/config
     networks:
