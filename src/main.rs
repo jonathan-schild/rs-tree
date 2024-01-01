@@ -7,12 +7,13 @@ use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
     cookie::Key,
     middleware::{Compress, Logger, NormalizePath, TrailingSlash},
-    web::scope,
+    web::{scope, Data},
     App, HttpServer,
 };
 use base64::{engine::general_purpose, Engine};
 use dotenv::var;
 use log::{debug, error, info, warn};
+use sqlx::PgPool;
 
 mod db;
 mod url_management;
@@ -72,6 +73,10 @@ async fn main() -> std::io::Result<()> {
 
     let secret_key = read_secrete_key();
 
+    let db = PgPool::connect(&postgres_connection_string)
+        .await
+        .expect("Cannot connect to PostgreSQL");
+
     let store = RedisSessionStore::new(redis_connection_string)
         .await
         .expect("Cannot connect to Redis!");
@@ -82,6 +87,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(SessionMiddleware::new(store.clone(), secret_key.clone()))
             .wrap(Logger::default())
             .wrap(NormalizePath::new(TrailingSlash::Trim))
+            .app_data(Data::new(db.clone()))
             .service(
                 scope(&api_url)
                     .service(scope("/user").configure(user_management::config))
