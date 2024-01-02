@@ -34,13 +34,12 @@ async fn create(
 ) -> impl Responder {
     // TODO check authorisation
 
-    if let Ok(_) = sqlx::query!(
-        r#"insert into "user" (uuid, user_name, password_hash) values ($1, $2, $3) "#r,
+    if let Ok(_) = User::insert(
+        &app_data.db,
         Uuid::new_v4(),
-        data.user_name,
-        hash_password(&data.password)
+        &data.user_name,
+        &hash_password(&data.password),
     )
-    .execute(&app_data.db)
     .await
     {
         HttpResponse::Ok().body(format!("Created User: {}", data.user_name))
@@ -51,14 +50,7 @@ async fn create(
 
 #[post("/login")]
 async fn login(session: Session, data: Json<LoginData>, app_data: Data<AppData>) -> impl Responder {
-    if let Ok(user) = sqlx::query_as!(
-        User,
-        r#"select * from "user" where user_name = $1"#r,
-        data.user_name
-    )
-    .fetch_one(&app_data.db)
-    .await
-    {
+    if let Ok(user) = User::select(&app_data.db, &data.user_name).await {
         match user.password_hash {
             Some(hash) => {
                 if verify_password(&data.password, &hash) {

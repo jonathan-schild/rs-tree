@@ -10,11 +10,13 @@ use actix_web::{
     web::{scope, Data},
     App, HttpServer,
 };
+use anyhow::{Error, Result};
 use base64::{engine::general_purpose, Engine};
+use db::user::User;
 use dotenv::var;
 use log::{debug, error, info, warn};
 use pwdpbkdf2::hash_password;
-use sqlx::{migrate, query, PgPool};
+use sqlx::{migrate, PgPool};
 use uuid::Uuid;
 
 #[allow(unused)]
@@ -28,22 +30,18 @@ struct AppData {
     pub db: PgPool,
 }
 
-async fn create_admin_user(db: &PgPool) {
-    let c = query!(r#"select count(*) from "user";"#r)
-        .fetch_one(db)
-        .await
-        .expect("cannot count users");
-    if c.count.expect("cannot count users") == 0 {
-        sqlx::query!(
-            r#"insert into "user" (uuid, user_name, password_hash) values ($1, 'admin', $2) "#r,
+async fn create_admin_user(db: &PgPool) -> Result<(), Error> {
+    if User::count(db).await? == 0 {
+        User::insert(
+            db,
             Uuid::nil(),
-            hash_password(&var("ADMIN").expect("cannot create admin user"))
+            "admin",
+            &hash_password(&var("ADMIN").expect("cannot create admin user")),
         )
-        .execute(db)
-        .await
-        .expect("admin creation failed");
+        .await?;
         info!("admin user created!")
     }
+    Ok(())
 }
 
 fn read_secrete_key() -> Key {
@@ -79,7 +77,7 @@ fn read_secrete_key() -> Key {
     }
 }
 
-pub async fn rs_tree_run() -> std::io::Result<()> {
+pub async fn rs_tree_run() -> Result<(), Error> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     info!("start logging");
 
@@ -103,7 +101,7 @@ pub async fn rs_tree_run() -> std::io::Result<()> {
         .expect("Cannot connect to PostgreSQL");
     info!("connected to database");
 
-    create_admin_user(&db).await;
+    create_admin_user(&db).await?;
 
     migrate!("./migrations")
         .run(&db)
@@ -131,5 +129,7 @@ pub async fn rs_tree_run() -> std::io::Result<()> {
     })
     .bind(("0.0.0.0", port))?
     .run()
-    .await
+    .await?;
+
+    Result::Ok(())
 }
