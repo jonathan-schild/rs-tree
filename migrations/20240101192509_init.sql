@@ -31,6 +31,7 @@ CREATE TABLE "link_tree" (
     root boolean default(false) NOT NULL,
     tree boolean default(false) NOT NULL,
     redir_link TEXT default(NULL),
+    g_id serial NOT NULL REFERENCES "group" (id),
     UNIQUE (uuid),
     UNIQUE (name),
     UNIQUE (short_url),
@@ -50,7 +51,6 @@ CREATE TABLE "link_entry" (
 CREATE TABLE "link_tree_entry" (
     t_id serial NOT NULL REFERENCES "link_tree" (id),
     e_id serial NOT NULL REFERENCES "link_entry" (id),
-    g_id serial NOT NULL REFERENCES "group" (id),
     PRIMARY KEY (t_id, e_id)
 );
 
