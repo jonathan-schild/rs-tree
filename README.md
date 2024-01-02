@@ -21,3 +21,8 @@ docker compose up -d --build
 | `DATABASE_URL`| `postgres://rs-tree:rs-tree@rs-tree-db/rs-tree` | Postgres Database     |
 | `REDIS_URL`   | `redis://rs-tree-session:6379`                  | Redis Database        |
 | `COOKIE_KEY`  | `f000NkKUx[...]DRNLYyC5y8SOk9tics/bxTL+etQ==`   | 64 Byte Key in Base64 |
+| `ADMIN`       | `RS-Tr33`                                       | Initial Admin Password|
+
+## Important Things
+
+- special user `admin` with uuid: `00000000-0000-0000-0000-000000000000` created if number of users is 0.

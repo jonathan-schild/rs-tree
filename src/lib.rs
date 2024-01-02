@@ -13,7 +13,9 @@ use actix_web::{
 use base64::{engine::general_purpose, Engine};
 use dotenv::var;
 use log::{debug, error, info, warn};
-use sqlx::{migrate, PgPool};
+use pwdpbkdf2::hash_password;
+use sqlx::{migrate, query, PgPool};
+use uuid::Uuid;
 
 #[allow(unused)]
 mod db;
@@ -21,6 +23,28 @@ mod db;
 mod url_management;
 mod user_management;
 mod utility;
+
+struct AppData {
+    pub db: PgPool,
+}
+
+async fn create_admin_user(db: &PgPool) {
+    let c = query!(r#"select count(*) from "user";"#r)
+        .fetch_one(db)
+        .await
+        .expect("cannot count users");
+    if c.count.expect("cannot count users") == 0 {
+        sqlx::query!(
+            r#"insert into "user" (uuid, user_name, password_hash) values ($1, 'admin', $2) "#r,
+            Uuid::nil(),
+            hash_password(&var("ADMIN").expect("cannot create admin user"))
+        )
+        .execute(db)
+        .await
+        .expect("admin creation failed");
+        info!("admin user created!")
+    }
+}
 
 fn read_secrete_key() -> Key {
     if let Ok(base64_key) = var("COOKIE_KEY") {
@@ -79,6 +103,8 @@ pub async fn rs_tree_run() -> std::io::Result<()> {
         .expect("Cannot connect to PostgreSQL");
     info!("connected to database");
 
+    create_admin_user(&db).await;
+
     migrate!("./migrations")
         .run(&db)
         .await
@@ -96,7 +122,7 @@ pub async fn rs_tree_run() -> std::io::Result<()> {
             .wrap(SessionMiddleware::new(store.clone(), secret_key.clone()))
             .wrap(Logger::default())
             .wrap(NormalizePath::new(TrailingSlash::Trim))
-            .app_data(Data::new(db.clone()))
+            .app_data(Data::new(AppData { db: db.clone() }))
             .service(
                 scope(&api_url)
                     .service(scope("/user").configure(user_management::config))
