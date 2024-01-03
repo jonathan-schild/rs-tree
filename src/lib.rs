@@ -19,12 +19,11 @@ use pwdpbkdf2::hash_password;
 use sqlx::{migrate, PgPool};
 use uuid::Uuid;
 
+use crate::services::{url_management, user_management};
+
 #[allow(unused)]
 mod db;
-
-mod url_management;
-mod user_management;
-mod utility;
+mod services;
 
 struct AppData {
     pub db: PgPool,
