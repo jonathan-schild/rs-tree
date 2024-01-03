@@ -42,7 +42,7 @@ impl User {
         Ok(id)
     }
 
-    pub async fn select(db: &PgPool, user_name: &str) -> Result<Self, Error> {
+    pub async fn select_by_user_name(db: &PgPool, user_name: &str) -> Result<Self, Error> {
         let user = sqlx::query_as!(
             User,
             r#"select * from "user" where user_name = $1"#r,
@@ -50,6 +50,14 @@ impl User {
         )
         .fetch_one(db)
         .await?;
+
+        Ok(user)
+    }
+
+    pub async fn select(db: &PgPool, id: i32) -> Result<Self, Error> {
+        let user = sqlx::query_as!(User, r#"select * from "user" where id = $1"#r, id)
+            .fetch_one(db)
+            .await?;
 
         Ok(user)
     }

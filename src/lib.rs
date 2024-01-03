@@ -12,35 +12,22 @@ use actix_web::{
 };
 use anyhow::{Error, Result};
 use base64::{engine::general_purpose, Engine};
-use db::user::User;
 use dotenv::var;
 use log::{debug, error, info, warn};
-use pwdpbkdf2::hash_password;
 use sqlx::{migrate, PgPool};
-use uuid::Uuid;
 
-use crate::services::{url_management, user_management};
+use crate::{
+    services::{url_management, user_management},
+    snp_manager::create_admin_user,
+};
 
 #[allow(unused)]
 mod db;
 mod services;
+mod snp_manager;
 
 struct AppData {
     pub db: PgPool,
-}
-
-async fn create_admin_user(db: &PgPool) -> Result<(), Error> {
-    if User::count(db).await? == 0 {
-        User::insert(
-            db,
-            Uuid::nil(),
-            "admin",
-            &hash_password(&var("ADMIN").expect("cannot create admin user")),
-        )
-        .await?;
-        info!("admin user created!")
-    }
-    Ok(())
 }
 
 fn read_secrete_key() -> Key {

@@ -5,11 +5,12 @@ use actix_web::{
     HttpResponse, Responder,
 };
 use base64::{engine::general_purpose, Engine};
-use log::info;
+use log::{error, info};
 use pwdpbkdf2::{hash_password, verify_password};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use crate::snp_manager::{self as snp, is_authorised};
 use crate::{db::user::User, AppData};
 
 pub fn config(cfg: &mut ServiceConfig) {
@@ -50,12 +51,15 @@ async fn create(
 
 #[post("/login")]
 async fn login(session: Session, data: Json<LoginData>, app_data: Data<AppData>) -> impl Responder {
-    if let Ok(user) = User::select(&app_data.db, &data.user_name).await {
+    if is_authorised(snp::AuthorisationType::Login, &session, &app_data.db).await {
+        return HttpResponse::Ok();
+    }
+
+    if let Ok(user) = User::select_by_user_name(&app_data.db, &data.user_name).await {
         match user.password_hash {
             Some(hash) => {
                 if verify_password(&data.password, &hash) {
-                    session.insert("login", true).unwrap();
-                    info!("login: {}", user.user_name);
+                    snp::login(user.id, &session, &app_data.db).await.unwrap();
                     HttpResponse::Ok()
                 } else {
                     info!("wrong password: {}", user.user_name);
@@ -74,7 +78,7 @@ async fn login(session: Session, data: Json<LoginData>, app_data: Data<AppData>)
         );
         if hash_password(&data.password) == "DasKannNichtSein!NoQuickExit" {
             // https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#authentication-and-error-messages
-            info!("lucky!")
+            error!("lucky!")
         };
         HttpResponse::Unauthorized()
     }
