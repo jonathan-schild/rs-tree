@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Jonathan "Nath" Schild - MIT License
  */
 
-use sqlx::FromRow;
+use sqlx::{query_as, FromRow, PgPool};
 use uuid::Uuid;
 
 #[derive(Debug, FromRow)]
@@ -16,6 +16,24 @@ pub struct LinkTree {
     pub tree: bool,
     pub redir_link: Option<String>,
     pub g_id: i32,
+}
+
+impl LinkTree {
+    #[must_use]
+    pub async fn select_by_link(link: &str, db: &PgPool) -> Option<Self> {
+        if let Ok(t) = query_as!(
+            Self,
+            r#"select * from "link_tree" where $1 = short_url OR $1 = named_url "#r,
+            link
+        )
+        .fetch_one(db)
+        .await
+        {
+            Some(t)
+        } else {
+            None
+        }
+    }
 }
 
 #[derive(Debug, FromRow)]
