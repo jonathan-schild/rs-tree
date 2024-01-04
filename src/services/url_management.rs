@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2024 Jonathan "Nath" Schild - MIT License
+ */
+
 use actix_session::Session;
 use actix_web::{
     delete, get, post,

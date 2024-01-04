@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2024 Jonathan "Nath" Schild - MIT License
+ */
+
 use sqlx::FromRow;
 
 #[derive(Debug, FromRow)]

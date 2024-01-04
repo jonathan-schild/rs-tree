@@ -8,7 +8,6 @@
 **/.classpath
 **/.dockerignore
 **/.env
-**/.git
 **/.gitignore
 **/.project
 **/.settings
@@ -29,4 +28,6 @@
 /bin
 /target
 LICENSE
-README.md
+
+#**/.git
+#README.md

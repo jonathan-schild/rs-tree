@@ -1,12 +1,15 @@
+/*
+ * Copyright (c) 2024 Jonathan "Nath" Schild - MIT License
+ */
+
 use actix_session::Session;
 use anyhow::Error;
 use dotenv::var;
 use log::info;
-use pwdpbkdf2::hash_password;
-use sqlx::{postgres::PgAdvisoryLock, PgPool};
+use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::db::user::User;
+use crate::{db::user::User, utility::hash_password};
 
 const USER_NAME: &str = "user";
 const LOGGED_IN: &str = "login";
@@ -18,7 +21,7 @@ pub enum AuthorisationType {
     Login,
 }
 
-pub async fn is_authorised(at: AuthorisationType, session: &Session, db: &PgPool) -> bool {
+pub async fn is_authorised(_at: AuthorisationType, session: &Session, _db: &PgPool) -> bool {
     // TODO logging
     session.get::<bool>(LOGGED_IN).unwrap().is_some()
 }
@@ -32,7 +35,7 @@ pub async fn create_admin_user(db: &PgPool) -> Result<(), Error> {
             &hash_password(&var("ADMIN").expect("cannot create admin user")),
         )
         .await?;
-        info!("admin user created!")
+        info!("admin user created!");
     }
     Ok(())
 }

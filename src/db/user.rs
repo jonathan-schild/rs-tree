@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2024 Jonathan "Nath" Schild - MIT License
+ */
+
 use anyhow::anyhow;
 use anyhow::Error;
 use anyhow::Ok;

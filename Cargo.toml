@@ -1,11 +1,13 @@
 [package]
 name = "rs-tree"
-version = "0.1.0"
+version = "0.0.0-wip"
+authors = ["Jonathan \"Nath\" Schild <nath@j-schild.de>"]
 edition = "2021"
+description = "Advanced link tree application with user and group management written in Rust."
+readme = "README.md"
+repository = "https://github.com/jonathan-schild/rs-tree"
 license = "MIT"
-
-[workspace]
-members = [".", "pwdpbkdf2"]
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -18,7 +20,8 @@ daemonize = "0.5.0"
 dotenv = "0.15.0"
 env_logger = "0.10.1"
 log = "0.4.20"
-pwdpbkdf2 = { path = "pwdpbkdf2" }
+pbkdf2 = { version = "0.12", features = ["simple"] }
+rand_core = { version = "0.6", features = ["std"] }
 serde_json = "1.0.108"
 serde = { version = "1.0.193", features = ["derive"] }
 serde_yaml = "0.9.29"

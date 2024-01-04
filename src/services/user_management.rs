@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2024 Jonathan "Nath" Schild - MIT License
+ */
+
 use actix_session::Session;
 use actix_web::{
     post,
@@ -6,12 +10,14 @@ use actix_web::{
 };
 use base64::{engine::general_purpose, Engine};
 use log::{error, info};
-use pwdpbkdf2::{hash_password, verify_password};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::snp_manager::{self as snp, is_authorised};
-use crate::{db::user::User, AppData};
+use crate::{db::user::User, utility::verify_password, AppData};
+use crate::{
+    snp_manager::{self as snp, is_authorised},
+    utility::hash_password,
+};
 
 pub fn config(cfg: &mut ServiceConfig) {
     cfg.service(create).service(login).service(logout);
@@ -35,13 +41,14 @@ async fn create(
 ) -> impl Responder {
     // TODO check authorisation
 
-    if let Ok(_) = User::insert(
+    if User::insert(
         &app_data.db,
         Uuid::new_v4(),
         &data.user_name,
         &hash_password(&data.password),
     )
     .await
+    .is_ok()
     {
         HttpResponse::Ok().body(format!("Created User: {}", data.user_name))
     } else {
@@ -56,20 +63,17 @@ async fn login(session: Session, data: Json<LoginData>, app_data: Data<AppData>)
     }
 
     if let Ok(user) = User::select_by_user_name(&app_data.db, &data.user_name).await {
-        match user.password_hash {
-            Some(hash) => {
-                if verify_password(&data.password, &hash) {
-                    snp::login(user.id, &session, &app_data.db).await.unwrap();
-                    HttpResponse::Ok()
-                } else {
-                    info!("wrong password: {}", user.user_name);
-                    HttpResponse::Unauthorized()
-                }
-            }
-            None => {
-                info!("account locked: {}", user.user_name);
+        if let Some(hash) = user.password_hash {
+            if verify_password(&data.password, &hash) {
+                snp::login(user.id, &session, &app_data.db).await.unwrap();
+                HttpResponse::Ok()
+            } else {
+                info!("wrong password: {}", user.user_name);
                 HttpResponse::Unauthorized()
             }
+        } else {
+            info!("account locked: {}", user.user_name);
+            HttpResponse::Unauthorized()
         }
     } else {
         info!(
@@ -78,7 +82,7 @@ async fn login(session: Session, data: Json<LoginData>, app_data: Data<AppData>)
         );
         if hash_password(&data.password) == "DasKannNichtSein!NoQuickExit" {
             // https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#authentication-and-error-messages
-            error!("lucky!")
+            error!("lucky!");
         };
         HttpResponse::Unauthorized()
     }

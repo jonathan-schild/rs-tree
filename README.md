@@ -14,7 +14,9 @@ docker compose up -d --build
 - <http://localhost/apidevel/>: [Swagger Editor](https://swagger.io/tools/swagger-editor/)
 
 ## Environment Variables
-:rotating_light: **Change Default Passwords and Keys** :rotating_light:
+
+🚨 **Change Default Passwords and Keys** 🚨
+
 | Variable      | Default / Example                               | Description           |
 | :---          | :---                                            | :---                  |
 | `URL`         | `/api`                                          | API Base URL          |

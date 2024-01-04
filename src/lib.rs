@@ -1,7 +1,12 @@
-// #![warn(clippy::cargo)]
+/*
+ * Copyright (c) 2024 Jonathan "Nath" Schild - MIT License
+ */
+
+#![warn(clippy::cargo)]
 #![warn(clippy::pedantic)]
 // #![warn(clippy::missing_docs_in_private_items)]
 // #![warn(missing_docs)]
+#![doc = include_str!("../README.md")]
 
 use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
@@ -19,17 +24,20 @@ use sqlx::{migrate, PgPool};
 use crate::{
     services::{url_management, user_management},
     snp_manager::create_admin_user,
+    utility::build_info,
 };
 
 #[allow(unused)]
 mod db;
 mod services;
 mod snp_manager;
+mod utility;
 
 struct AppData {
     pub db: PgPool,
 }
 
+/// Read cookie key from env (see [`actix_session`]).
 fn read_secrete_key() -> Key {
     if let Ok(base64_key) = var("COOKIE_KEY") {
         if let Ok(key_slice) = general_purpose::STANDARD.decode(&base64_key) {
@@ -65,7 +73,7 @@ fn read_secrete_key() -> Key {
 
 pub async fn rs_tree_run() -> Result<(), Error> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-    info!("start logging");
+    info!("{}", build_info());
 
     let redis_connection_string = var("REDIS_URL").expect("accessing environment failed");
     info!("redis: {}", redis_connection_string);
