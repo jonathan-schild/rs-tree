@@ -5,7 +5,7 @@
 use actix_session::Session;
 use anyhow::Error;
 use dotenv::var;
-use log::info;
+use log::{error, info};
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -13,17 +13,23 @@ use crate::{db::user::User, utility::hash_password};
 
 const USER_NAME: &str = "user";
 const LOGGED_IN: &str = "login";
-const _IS_ROOT: &str = "root";
+const IS_ROOT: &str = "root";
 const _GROUPS: &str = "groups";
 const IS_ADMIN: &str = "admin";
 
 pub enum AuthorisationType {
     Login,
+    UserManagement,
 }
 
-pub async fn is_authorised(_at: AuthorisationType, session: &Session, _db: &PgPool) -> bool {
-    // TODO logging
-    session.get::<bool>(LOGGED_IN).unwrap().is_some()
+pub async fn is_authorised(at: AuthorisationType, session: &Session, _db: &PgPool) -> bool {
+    match at {
+        AuthorisationType::Login => session.get(LOGGED_IN).unwrap().is_some_and(|b| b),
+        AuthorisationType::UserManagement => {
+            session.get(IS_ROOT).unwrap().is_some_and(|b| b)
+                || session.get(IS_ADMIN).unwrap().is_some_and(|b| b)
+        }
+    }
 }
 
 pub async fn create_admin_user(db: &PgPool) -> Result<(), Error> {
@@ -41,6 +47,7 @@ pub async fn create_admin_user(db: &PgPool) -> Result<(), Error> {
 }
 
 pub async fn login(uid: i32, session: &Session, db: &PgPool) -> anyhow::Result<()> {
+    // TODO set session variables at login
     let user = User::select(db, uid).await.unwrap();
     session.insert(USER_NAME, &user.user_name).unwrap();
     session.insert(LOGGED_IN, true).unwrap();

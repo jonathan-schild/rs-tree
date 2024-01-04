@@ -22,7 +22,7 @@ RUN --mount=type=bind,source=src,target=src \
     <<EOF
 set -e
 cargo build --locked --profile=dev-docker
-cp ./target/release/$APP_NAME /bin/server
+cp ./target/dev-docker/$APP_NAME /bin/server
 EOF
 
 FROM alpine:3.18 AS final

@@ -13,7 +13,7 @@ use log::{error, info};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{db::user::User, utility::verify_password, AppData};
+use crate::{db::user::User, snp_manager::AuthorisationType, utility::verify_password, AppData};
 use crate::{
     snp_manager::{self as snp, is_authorised},
     utility::hash_password,
@@ -35,22 +35,24 @@ struct LoginData {
 
 #[post("/create")]
 async fn create(
-    _session: Session,
+    session: Session,
     data: Json<LoginData>,
     app_data: Data<AppData>,
 ) -> impl Responder {
-    // TODO check authorisation
-
-    if User::insert(
-        &app_data.db,
-        Uuid::new_v4(),
-        &data.user_name,
-        &hash_password(&data.password),
-    )
-    .await
-    .is_ok()
-    {
-        HttpResponse::Ok().body(format!("Created User: {}", data.user_name))
+    if is_authorised(AuthorisationType::UserManagement, &session, &app_data.db).await {
+        if User::insert(
+            &app_data.db,
+            Uuid::new_v4(),
+            &data.user_name,
+            &hash_password(&data.password),
+        )
+        .await
+        .is_ok()
+        {
+            HttpResponse::Ok().body(format!("Created User: {}", data.user_name))
+        } else {
+            HttpResponse::Forbidden().finish()
+        }
     } else {
         HttpResponse::Unauthorized().finish()
     }
@@ -58,7 +60,7 @@ async fn create(
 
 #[post("/login")]
 async fn login(session: Session, data: Json<LoginData>, app_data: Data<AppData>) -> impl Responder {
-    if is_authorised(snp::AuthorisationType::Login, &session, &app_data.db).await {
+    if is_authorised(AuthorisationType::Login, &session, &app_data.db).await {
         return HttpResponse::Ok();
     }
 

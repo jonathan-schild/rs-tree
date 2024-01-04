@@ -1,22 +1,81 @@
 openapi: 3.0.1
 info:
   title: rs-tree API
-  description: Link Tree...
+  description: Advanced link tree application with user and group management written in Rust.
   version: 0.1.0
   license:
     name: MIT
     url: https://raw.githubusercontent.com/jonathan-schild/rs-tree/main/LICENSE
 servers:
   - url: http://localhost/api
-    description: Local development instance.
+    description: docker-compose.yml
 tags:
   - name: tree
-    description: ""
+    description: ''
   - name: tree-permissions
-    description: ""
+    description: ''
   - name: user
-    description: ""
+    description: ''
 paths:
+  /user/create:
+    post:
+      tags:
+        - user
+      summary: Create a new user.
+      description: Create a new user.
+      parameters:
+        - name: id
+          in: cookie
+          description: session id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: user
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: User created.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Log in required.
+        '403':
+          description: User already exists.
+  /user/login:
+    post:
+      tags:
+        - user
+      summary: Log in.
+      description: Log in.
+      requestBody:
+        description: user
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Login sucesfull.
+        '401':
+          description: User does not exist or wrong password.
   /create:
     post:
       tags:
@@ -24,7 +83,7 @@ paths:
       summary: Create a new empty link tree entry and return a short link.
       description: Create a new empty link tree entry and return a short link `short`.
       responses:
-        "200":
+        '200':
           description: New empty link tree entry `short` created.
           content:
             application/json:
@@ -34,7 +93,7 @@ paths:
               examples:
                 short:
                   value: tuD120dA
-        "401":
+        '401':
           description: Log in required.
   /create/{short}:
     post:
@@ -43,9 +102,9 @@ paths:
       summary: Create a new empty link tree entry with given short link.
       description: Create a new empty link tree entry with given short link `short`.
       parameters:
-        - $ref: "#/components/parameters/short"
+        - $ref: '#/components/parameters/short'
       responses:
-        "200":
+        '200':
           description: New empty link tree entry `short` created.
           content:
             application/json:
@@ -55,9 +114,9 @@ paths:
               examples:
                 short:
                   value: tuD120dA
-        "401":
+        '401':
           description: Log in required.
-        "403":
+        '403':
           description: Link tree entry `short` already exists.
   /update/{short}:
     post:
@@ -66,13 +125,13 @@ paths:
       summary: Update link tree entry.
       description: Update link tree entry `short`.
       parameters:
-        - $ref: "#/components/parameters/short"
+        - $ref: '#/components/parameters/short'
       responses:
-        "200":
+        '200':
           description: Link tree entry `short` updated.
-        "401":
+        '401':
           description: Log in required.
-        "403":
+        '403':
           description: No permission to update `short`.
   /resolve/{short}:
     get:
@@ -81,9 +140,9 @@ paths:
       summary: Get link tree entry.
       description: Get link tree entry `short`.
       parameters:
-        - $ref: "#/components/parameters/short"
+        - $ref: '#/components/parameters/short'
       responses:
-        "200":
+        '200':
           description: New empty link tree entry `short` created.
           content:
             application/json:
@@ -93,9 +152,9 @@ paths:
               examples:
                 short:
                   value: tuD120dA
-        "401":
+        '401':
           description: Log in required.
-        "403":
+        '403':
           description: No permission to get `short`.
   /delete/{short}:
     delete:
@@ -104,20 +163,20 @@ paths:
       summary: Delete link tree entry.
       description: Delete link tree entry `short`.
       parameters:
-        - $ref: "#/components/parameters/short"
+        - $ref: '#/components/parameters/short'
       responses:
-        "200":
+        '200':
           description: Link tree entry `short` deleted.
-        "401":
+        '401':
           description: Log in required.
-        "403":
+        '403':
           description: No permission to delete `short`.
 components:
   parameters:
     short:
       name: short
       in: path
-      description: ""
+      description: ''
       required: true
       schema:
         type: string
