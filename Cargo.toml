@@ -29,6 +29,9 @@ sqlx = { version = "0.7.3", features = ["runtime-tokio", "postgres", "macros", "
 thiserror = "1.0.52"
 tokio = { version = "1.35.1", features = ["full"] }
 uuid = { version = "1.6.1", features = ["v4", "fast-rng"] }
+actix-web-httpauth = "0.8.1"
+jsonwebtoken = "9.2.0"
+totp-rs = "5.4.0"
 
 [profile.dev-docker]
 inherits = "dev"
