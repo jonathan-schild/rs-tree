@@ -95,13 +95,13 @@ pub async fn rs_tree_run() -> Result<(), Error> {
         .expect("Cannot connect to PostgreSQL");
     info!("connected to database");
 
-    create_admin_user(&db).await?;
-
     migrate!("./migrations")
         .run(&db)
         .await
         .expect("Cannot run migrations!");
     info!("applied migrations");
+
+    create_admin_user(&db).await?;
 
     let store = RedisSessionStore::new(redis_connection_string)
         .await
