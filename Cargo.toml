@@ -30,6 +30,10 @@ thiserror = "1.0.52"
 tokio = { version = "1.35.1", features = ["full"] }
 uuid = { version = "1.6.1", features = ["v4", "fast-rng"] }
 
+[profile.dev-docker]
+inherits = "dev"
+opt-level = 3
+
 [profile.release]
 lto = "fat"
 panic = "abort"

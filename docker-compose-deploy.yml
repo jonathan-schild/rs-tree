@@ -6,11 +6,11 @@ services:
       context: .
       target: final
     environment:
-      - DATABASE_URL=postgres://rs-tree:rs-tree@rs-tree-db/rs-tree
+      - DATABASE_URL=postgres://rs-tree:XXX@rs-tree-db/rs-tree
       - REDIS_URL=redis://rs-tree-session:6379
       - URL=/api
-      - COOKIE_KEY=f000NkKUxyoHeOxr+cPvkdADfyX0MBEqeZ12GsHjTyI3APe1WLuVizJUoDBDRNLYyC5y8SOk9tics/bxTL+etQ==
-      - ADMIN=RS-Tr33
+      - COOKIE_KEY=XXX
+      - ADMIN=XXX
     networks:
       - dmz
     depends_on:
@@ -19,24 +19,10 @@ services:
       rs-tree-session:
         condition: service_healthy
   api-doc:
-    image: swaggerapi/swagger-editor:latest
+    image: swaggerapi/swagger-ui:latest
     environment:
-     - BASE_URL=/apidoc
-     - URL=/apidoc/openapi.yaml
-    networks:
-      - dmz
-  proxy:
-    image: caddy:2.7-alpine
-    ports:
-      - "80:80"
-      - "80:80/udp"
-      - "443:443"
-      - "443:443/udp"
-    volumes:
-      - ./caddy:/etc/caddy
-      - ./doc/openapi.yaml:/srv/openapi.yaml
-      - proxy_data:/data
-      - proxy_config:/config
+      - BASE_URL=/apidoc
+      - URL=/apidoc/openapi.yaml
     networks:
       - dmz
   rs-tree-db:
@@ -45,7 +31,7 @@ services:
       - 5432:5432
     environment:
       - POSTGRES_USER=rs-tree
-      - POSTGRES_PASSWORD=rs-tree
+      - POSTGRES_PASSWORD=XXX
       - POSTGRES_DB=rs-tree
     networks:
        - dmz
@@ -69,8 +55,7 @@ services:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 volumes:
   rs-tree-db:
+    extern: true
   rs-tree-session:
-  proxy_data:
-  proxy_config:
 networks:
   dmz:

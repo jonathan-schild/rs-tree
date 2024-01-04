@@ -9,9 +9,6 @@ http://localhost, http://127.0.0.1 {
 		redir /apidoc /apidoc/ permanent
 		reverse_proxy /apidoc/* api-doc:8080
 
-		redir /apidevel /apidevel/ permanent
-		reverse_proxy /apidevel/* api-devel:8080
-
 		rewrite /api /api/
 		reverse_proxy /api/* server:8080
 
