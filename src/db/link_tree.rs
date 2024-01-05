@@ -2,6 +2,7 @@
  * Copyright (c) 2024 Jonathan "Nath" Schild - MIT License
  */
 
+use anyhow::Error;
 use sqlx::{query_as, FromRow, PgPool};
 use uuid::Uuid;
 
@@ -19,11 +20,32 @@ pub struct LinkTree {
 }
 
 impl LinkTree {
+    pub async fn insert(db: &PgPool, name: String, short_url: String) -> Result<i32, Error> {
+        let id = sqlx::query!(
+            r#"
+insert into "link_tree"
+    (uuid, name, short_url, g_id)
+    VALUES ($1, $2, $3, $4) returning (id)
+"#r,
+            Uuid::new_v4(),
+            name,
+            short_url,
+            1
+        )
+        .fetch_one(db)
+        .await?
+        .id;
+
+        Ok(id)
+    }
+
     #[must_use]
     pub async fn select_by_link(link: &str, db: &PgPool) -> Option<Self> {
         if let Ok(t) = query_as!(
             Self,
-            r#"select * from "link_tree" where $1 = short_url OR $1 = named_url "#r,
+            r#"
+select * from "link_tree"
+    where $1 = short_url OR $1 = named_url "#r,
             link
         )
         .fetch_one(db)
