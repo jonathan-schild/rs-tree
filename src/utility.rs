@@ -11,6 +11,12 @@ use rand_core::OsRng;
 #[must_use]
 pub fn hash_password(password: &str) -> String {
     let salt = SaltString::generate(&mut OsRng);
+
+    //Pbkdf2
+    //    .hash_password(password.as_bytes(), &salt)
+    //    .unwrap()
+    //    .to_string()
+
     Pbkdf2
         .hash_password_customized(
             password.as_bytes(),

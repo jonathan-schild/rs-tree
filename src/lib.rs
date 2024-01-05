@@ -31,7 +31,7 @@ use crate::{
 mod db;
 mod services;
 mod snp_manager;
-mod utility;
+pub mod utility;
 
 struct AppData {
     pub db: PgPool,
