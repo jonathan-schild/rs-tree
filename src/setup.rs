@@ -105,7 +105,7 @@ impl Config {
         info!("server port: {}", port);
         let port = port
             .parse()
-            .expect(&format!("{} is not a valid port", port));
+            .unwrap_or_else(|_| panic!("{port} is not a valid port"));
 
         let api_url = var("URL").unwrap_or_default();
         info!("api url: {}", api_url);

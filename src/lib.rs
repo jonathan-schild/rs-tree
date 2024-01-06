@@ -6,6 +6,8 @@
 #![warn(clippy::pedantic)]
 // #![warn(clippy::missing_docs_in_private_items)]
 // #![warn(missing_docs)]
+#![allow(clippy::module_name_repetitions)]
+#![allow(clippy::struct_field_names)]
 #![doc = include_str!("../README.md")]
 
 use actix_session::SessionMiddleware;

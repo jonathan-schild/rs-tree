@@ -27,11 +27,7 @@ impl LinkTree {
         g_id: i32,
     ) -> Result<i32, Error> {
         let id = sqlx::query!(
-            r#"
-insert into "link_tree"
-    (uuid, name, short_url, redir_link, g_id)
-    VALUES ($1, $2, $3, $4, $5) returning (id)
-"#r,
+            r#"insert into "link_tree" (uuid, name, short_url, redir_link, g_id) VALUES ($1, $2, $3, $4, $5) returning (id);"#r,
             Uuid::new_v4(),
             name,
             short_url,
@@ -49,9 +45,7 @@ insert into "link_tree"
     pub async fn select_by_link(link: &str, db: &PgPool) -> Option<Self> {
         if let Ok(t) = query_as!(
             Self,
-            r#"
-select * from "link_tree"
-    where $1 = short_url OR $1 = named_url "#r,
+            r#"select * from "link_tree" where $1 = short_url OR $1 = named_url;"#r,
             link
         )
         .fetch_one(db)

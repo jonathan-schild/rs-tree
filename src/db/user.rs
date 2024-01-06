@@ -17,17 +17,6 @@ pub struct User {
 }
 
 impl User {
-    pub async fn count(db: &PgPool) -> anyhow::Result<i64> {
-        let result = query!(r#"select count(*) from "user";"#r)
-            .fetch_one(db)
-            .await?;
-        if let Some(r) = result.count {
-            Ok(r)
-        } else {
-            Err(anyhow!("cannot determine number of users"))
-        }
-    }
-
     pub async fn insert(
         db: &PgPool,
         uuid: Uuid,
@@ -35,9 +24,7 @@ impl User {
         password_hash: Option<&str>,
     ) -> Result<i32, Error> {
         let id = sqlx::query!(
-            r#"
-insert into "user" (uuid, user_name, password_hash)
-    values ($1, $2, $3) returning (id)"#r,
+            r#"insert into "user" (uuid, user_name, password_hash) values ($1, $2, $3) returning (id);"#r,
             uuid,
             user_name,
             password_hash
@@ -49,10 +36,18 @@ insert into "user" (uuid, user_name, password_hash)
         Ok(id)
     }
 
+    pub async fn select(db: &PgPool, id: i32) -> Result<Self, Error> {
+        let user = sqlx::query_as!(Self, r#"select * from "user" where id = $1;"#r, id)
+            .fetch_one(db)
+            .await?;
+
+        Ok(user)
+    }
+
     pub async fn select_by_user_name(db: &PgPool, user_name: &str) -> Result<Self, Error> {
         let user = sqlx::query_as!(
             Self,
-            r#"select * from "user" where user_name = $1"#r,
+            r#"select * from "user" where user_name = $1;"#r,
             user_name
         )
         .fetch_one(db)
@@ -61,12 +56,15 @@ insert into "user" (uuid, user_name, password_hash)
         Ok(user)
     }
 
-    pub async fn select(db: &PgPool, id: i32) -> Result<Self, Error> {
-        let user = sqlx::query_as!(Self, r#"select * from "user" where id = $1"#r, id)
+    pub async fn count(db: &PgPool) -> anyhow::Result<i64> {
+        let result = query!(r#"select count(*) from "user";"#r)
             .fetch_one(db)
             .await?;
-
-        Ok(user)
+        if let Some(r) = result.count {
+            Ok(r)
+        } else {
+            Err(anyhow!("cannot determine number of users"))
+        }
     }
 }
 
@@ -79,17 +77,6 @@ pub struct Group {
 }
 
 impl Group {
-    pub async fn count(db: &PgPool) -> anyhow::Result<i64> {
-        let result = query!(r#"select count(*) from "group";"#r)
-            .fetch_one(db)
-            .await?;
-        if let Some(r) = result.count {
-            Ok(r)
-        } else {
-            Err(anyhow!("cannot determine number of groups"))
-        }
-    }
-
     pub async fn insert(
         db: &PgPool,
         uuid: Uuid,
@@ -97,9 +84,7 @@ impl Group {
         root: bool,
     ) -> Result<i32, Error> {
         let id = sqlx::query!(
-            r#"
-insert into "group" (uuid, group_name, root)
-    values ($1, $2, $3) returning (id)"#r,
+            r#"insert into "group" (uuid, group_name, root) values ($1, $2, $3) returning (id);"#r,
             uuid,
             group_name,
             root
@@ -114,13 +99,24 @@ insert into "group" (uuid, group_name, root)
     pub async fn select_by_group_name(db: &PgPool, group_name: &str) -> Result<Self, Error> {
         let group = sqlx::query_as!(
             Self,
-            r#"select * from "group" where group_name = $1"#r,
+            r#"select * from "group" where group_name = $1;"#r,
             group_name
         )
         .fetch_one(db)
         .await?;
 
         Ok(group)
+    }
+
+    pub async fn count(db: &PgPool) -> anyhow::Result<i64> {
+        let result = query!(r#"select count(*) from "group";"#r)
+            .fetch_one(db)
+            .await?;
+        if let Some(r) = result.count {
+            Ok(r)
+        } else {
+            Err(anyhow!("cannot determine number of groups"))
+        }
     }
 }
 
@@ -132,7 +128,7 @@ pub struct UserGroups {
 
 impl UserGroups {
     pub async fn insert(db: &PgPool, u_id: i32, g_id: i32) -> Result<(), Error> {
-        let id = sqlx::query!(r#"insert into "user_groups" values ($1, $2)"#r, u_id, g_id,)
+        let id = sqlx::query!(r#"insert into "user_groups" values ($1, $2);"#r, u_id, g_id,)
             .execute(db)
             .await?;
 
