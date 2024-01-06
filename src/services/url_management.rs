@@ -40,6 +40,7 @@ fn generate_short() -> String {
 
     OsRng.fill_bytes(&mut rng);
 
+    #[allow(clippy::cast_possible_truncation)]
     let mut s = rng
         .iter()
         .map(|r| SHORT_LINK_CHARACTER[(r % SHORT_LINK_CHARACTER.len() as u8) as usize])

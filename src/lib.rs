@@ -81,7 +81,12 @@ pub async fn rs_tree_run() -> Result<(), Error> {
     let postgres_connection_string = var("DATABASE_URL").expect("accessing environment failed");
     info!("postgres: {}", postgres_connection_string);
 
-    let port = var("SERVER_PORT").unwrap_or("8080".to_owned());
+    let port = if let Ok(port) = var("SERVER_PORT") {
+        port
+    } else {
+        warn!("port not defined!");
+        "8080".to_owned()
+    };
     info!("server port: {}", port);
     let port = port.parse().expect("parsing port failed");
 

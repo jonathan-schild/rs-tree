@@ -28,7 +28,7 @@ pub fn hash_password(password: &str) -> String {
             },
             &salt,
         )
-        .unwrap()
+        .unwrap() // FIXME unwrap
         .to_string()
 }
 
@@ -64,7 +64,7 @@ pub fn build_info() -> String {
     let max = *[name.len(), version.len(), rustc.len(), repo.len()]
         .iter()
         .max()
-        .unwrap();
+        .unwrap(); // FIXME unwrap
 
     let w = max + 2;
     format!(

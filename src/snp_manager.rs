@@ -41,15 +41,15 @@ pub async fn create_admin_user(db: &PgPool) -> Result<(), Error> {
 
 pub async fn login(uid: i32, session: &Session, db: &PgPool) -> anyhow::Result<()> {
     // TODO set session variables at login
-    let user = User::select(db, uid).await.unwrap();
-    session.insert(USER_NAME, &user.user_name).unwrap();
-    session.insert(LOGGED_IN, true).unwrap();
+    let user = User::select(db, uid).await.unwrap(); // FIXME unwrap
+    session.insert(USER_NAME, &user.user_name).unwrap(); // FIXME unwrap
+    session.insert(LOGGED_IN, true).unwrap(); // FIXME unwrap
     session
         .insert(
             IS_ADMIN,
             user.user_name == "admin" && user.uuid == Uuid::nil(),
         )
-        .unwrap();
+        .unwrap(); // FIXME unwrap
     info!("login user: {} {} {}", user.id, user.user_name, user.uuid);
     Result::Ok(())
 }

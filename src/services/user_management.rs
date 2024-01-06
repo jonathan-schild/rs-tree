@@ -67,7 +67,7 @@ async fn login(session: Session, data: Json<LoginData>, app_data: Data<AppData>)
     if let Ok(user) = User::select_by_user_name(&app_data.db, &data.user_name).await {
         if let Some(hash) = user.password_hash {
             if verify_password(&data.password, &hash) {
-                snp::login(user.id, &session, &app_data.db).await.unwrap();
+                snp::login(user.id, &session, &app_data.db).await.unwrap(); // FIXME unwrap
                 HttpResponse::Ok()
             } else {
                 info!("wrong password: {}", user.user_name);
