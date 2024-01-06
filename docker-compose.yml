@@ -14,11 +14,11 @@ services:
     networks:
       - dmz
     depends_on:
-      rs-tree-db:
+      db:
         condition: service_healthy
-      rs-tree-session:
+      session:
         condition: service_healthy
-  api-doc:
+  apidoc:
     image: swaggerapi/swagger-editor:latest
     environment:
      - BASE_URL=/apidoc
@@ -39,7 +39,7 @@ services:
       - proxy_config:/config
     networks:
       - dmz
-  rs-tree-db:
+  db:
     image: postgres
     ports:
       - 5432:5432
@@ -50,26 +50,26 @@ services:
     networks:
        - dmz
     volumes:
-      - rs-tree-db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U rs-tree -d rs-tree"]
       interval: 30s
       timeout: 60s
       retries: 5
       start_period: 60s
-  rs-tree-session:
+  session:
     image: redis
     ports:
       - 6379:6379
     networks:
       - dmz
     volumes:
-      - rs-tree-session:/data
+      - session:/data
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 volumes:
-  rs-tree-db:
-  rs-tree-session:
+  db:
+  session:
   proxy_data:
   proxy_config:
 networks:

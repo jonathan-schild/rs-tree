@@ -8,28 +8,21 @@
 // #![warn(missing_docs)]
 #![doc = include_str!("../README.md")]
 
-use actix_session::{storage::RedisSessionStore, SessionMiddleware};
+use actix_session::SessionMiddleware;
 use actix_web::{
-    cookie::Key,
     middleware::{Compress, Logger, NormalizePath, TrailingSlash},
-    web::{scope, Data},
+    web::Data,
     App, HttpServer,
 };
 use anyhow::{Error, Result};
-use base64::{engine::general_purpose, Engine};
-use dotenv::var;
-use log::{debug, error, info, warn};
-use sqlx::{migrate, PgPool};
-
-use crate::{
-    services::{url_management, user_management},
-    snp_manager::create_admin_user,
-    utility::build_info,
-};
+use setup::Config;
+use sqlx::PgPool;
 
 #[allow(unused)]
 mod db;
+
 mod services;
+mod setup;
 mod snp_manager;
 pub mod utility;
 
@@ -37,96 +30,23 @@ struct AppData {
     pub db: PgPool,
 }
 
-/// Read cookie key from env (see [`actix_session`]).
-fn read_secrete_key() -> Key {
-    if let Ok(base64_key) = var("COOKIE_KEY") {
-        if let Ok(key_slice) = general_purpose::STANDARD.decode(&base64_key) {
-            if let Ok(key) = Key::try_from(key_slice.as_slice()) {
-                debug! {"key: {}", base64_key}
-                info!("key loaded");
-                key
-            } else {
-                let key = Key::generate();
-                error!(
-                    "not a valid key! using key: {}",
-                    general_purpose::STANDARD.encode(key.master())
-                );
-                key
-            }
-        } else {
-            let key = Key::generate();
-            error!(
-                "key could not be decoded! using key: {}",
-                general_purpose::STANDARD.encode(key.master())
-            );
-            key
-        }
-    } else {
-        let key = Key::generate();
-        warn!(
-            "key could not read from environment! using key: {}",
-            general_purpose::STANDARD.encode(key.master())
-        );
-        key
-    }
-}
-
 pub async fn rs_tree_run() -> Result<(), Error> {
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-    info!("{}", build_info());
-
-    let redis_connection_string = var("REDIS_URL").expect("accessing environment failed");
-    info!("redis: {}", redis_connection_string);
-
-    let postgres_connection_string = var("DATABASE_URL").expect("accessing environment failed");
-    info!("postgres: {}", postgres_connection_string);
-
-    let port = if let Ok(port) = var("SERVER_PORT") {
-        port
-    } else {
-        warn!("port not defined!");
-        "8080".to_owned()
-    };
-    info!("server port: {}", port);
-    let port = port.parse().expect("parsing port failed");
-
-    let api_url = var("URL").expect("accessing environment failed");
-    info!("api url: {}", api_url);
-
-    let secret_key = read_secrete_key();
-
-    let db = PgPool::connect(&postgres_connection_string)
-        .await
-        .expect("Cannot connect to PostgreSQL");
-    info!("connected to database");
-
-    migrate!("./migrations")
-        .run(&db)
-        .await
-        .expect("Cannot run migrations!");
-    info!("applied migrations");
-
-    create_admin_user(&db).await?;
-
-    let store = RedisSessionStore::new(redis_connection_string)
-        .await
-        .expect("Cannot connect to Redis!");
-    info!("connected to session store");
+    let config = Config::init().await;
 
     HttpServer::new(move || {
         App::new()
             .wrap(Compress::default())
-            .wrap(SessionMiddleware::new(store.clone(), secret_key.clone()))
+            .wrap(SessionMiddleware::new(
+                config.redis.clone(),
+                config.secret_key.clone(),
+            ))
             .wrap(Logger::default())
             .wrap(NormalizePath::new(TrailingSlash::Trim))
-            .app_data(Data::new(AppData { db: db.clone() }))
-            .service(
-                scope(&api_url)
-                    .service(scope("/user").configure(user_management::config))
-                    .configure(url_management::config),
-            )
+            .app_data(Data::new(AppData {
+                db: config.postgres.clone(),
+            }))
     })
-    .bind(("0.0.0.0", port))?
+    .bind(("0.0.0.0", config.port))?
     .run()
     .await?;
 

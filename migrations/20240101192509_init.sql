@@ -26,7 +26,7 @@ CREATE TABLE "link_tree" (
     id serial NOT NULL PRIMARY KEY,
     uuid uuid NOT NULL,
     name varchar(64) NOT NULL,
-    short_url varchar(7) NOT NULL,
+    short_url varchar(20) NOT NULL,
     named_url varchar(64) default(NULL),
     root boolean default(false) NOT NULL,
     tree boolean default(false) NOT NULL,

@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\ninsert into \"user\" (uuid, user_name, password_hash)\n    values ($1, $2, $3) returning (id)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "2fa58b7605c9ec2d99ea62566b9d6b2600d1708d90b234d376e89406b27fb748"
+}

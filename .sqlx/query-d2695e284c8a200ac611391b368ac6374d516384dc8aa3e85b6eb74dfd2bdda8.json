@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\ninsert into \"link_tree\"\n    (uuid, name, short_url, redir_link, g_id)\n    VALUES ($1, $2, $3, $4, $5) returning (id)\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Varchar",
+        "Text",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "d2695e284c8a200ac611391b368ac6374d516384dc8aa3e85b6eb74dfd2bdda8"
+}

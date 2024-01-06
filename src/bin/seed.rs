@@ -32,6 +32,9 @@ fn main() {
                 println!("{}", Uuid::new_v4())
             }
         }
-        Commands::Hash { password } => println!("{}", hash_password(&password)),
+        Commands::Hash { password } => println!(
+            "{}",
+            hash_password(&password).expect("an unexpected error occurred")
+        ),
     }
 }

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "select * from \"link_tree\" where $1 = short_url OR $1 = named_url ",
+  "query": "\nselect * from \"link_tree\"\n    where $1 = short_url OR $1 = named_url ",
   "describe": {
     "columns": [
       {
@@ -66,5 +66,5 @@
       false
     ]
   },
-  "hash": "8afe9aa2b9ffcc3789a2173bf882b453187524234e32670d990024eac93535b0"
+  "hash": "ec4abcd860e7cc60b92ade85b3ae861a4761e8c261341a601dab9460cfc34754"
 }
