@@ -2,15 +2,49 @@
 
 Advanced link tree application with user and group management written in Rust.
 
-## Docker Dev
+## Install
+
+TBA
+
+## Build Docker Development Setup
+
+Compilation might fail, if `.sqlx` or migrations are not up to date.
+
+### Build Image and run development setup:
 
 ```sh
 docker compose up -d --build
 ```
+API location: `http://localhost/api/<endpoint>`  
+[OpenAPI location](http://localhost/apidoc/openapi.yaml): `http://localhost/apidoc/openapi.yaml`[^1]  
+[Swagger Editor](http://localhost/apidoc/): `http://localhost/apidoc/`
 
-- `http://localhost/api/<endpoint>`: Application API
-- <http://localhost/apidoc/>: [Swagger API Doc](https://swagger.io/tools/swagger-ui/) /[ Swagger Editor](https://swagger.io/tools/swagger-editor/)
-- <http://localhost/apidoc/openapi.yaml>: [OpenAPI 3.0 Doc](https://swagger.io/specification/v3/)
+[^1]: May not be up to date and be be aware of browser caching!
+
+### Start only dependent services and run rs-tree:
+
+```sh
+docker compose up -d db session
+cargo run
+```
+API location: `http://localhost:8080/api/<endpoint>`
+
+### .sqlx & migrations
+
+Requires [sqlx-cli](https://github.com/launchbadge/sqlx):
+```
+cargo install sqlx-cli
+```
+
+Update `.sqlx` requires an up-to-date database running:
+```sh
+cargo sqlx prepare
+```
+
+Updates database scheme:
+```sh
+sqlx migrate run
+```
 
 ## Environment Variables
 
@@ -24,6 +58,4 @@ docker compose up -d --build
 | `COOKIE_KEY`  | `f000NkKUx[...]DRNLYyC5y8SOk9tics/bxTL+etQ==`   | 64 Byte Key in Base64 |
 | `ADMIN`       | `RS-Tr33`                                       | Initial Admin Password|
 
-## Important Things
-
-- special user `admin` with uuid: `00000000-0000-0000-0000-000000000000` created if number of users is 0.
+see [.env](./.env) or [docker-compose.yml](./docker-compose.yml)
