@@ -6,7 +6,7 @@ Advanced link tree application with user and group management written in Rust.
 
 TBA
 
-## Build Docker Development Setup
+## Docker Development Setup
 
 Compilation might fail, if `.sqlx` or migrations are not up to date. (See [.sqlx & migrations](#sqlx--migrations))
 
@@ -59,3 +59,6 @@ sqlx migrate run
 | `ADMIN`       | `RS-Tr33`                                       | Initial Admin Password|
 
 see [.env](./.env) or [docker-compose.yml](./docker-compose.yml)
+
+## License
+Copyright (c) 2024 Jonathan "Nath" Schild - MIT License
