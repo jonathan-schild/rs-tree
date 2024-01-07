@@ -8,7 +8,7 @@ TBA
 
 ## Build Docker Development Setup
 
-Compilation might fail, if `.sqlx` or migrations are not up to date.
+Compilation might fail, if `.sqlx` or migrations are not up to date. (See [.sqlx & migrations](#sqlx--migrations))
 
 ### Build Image and run development setup:
 
