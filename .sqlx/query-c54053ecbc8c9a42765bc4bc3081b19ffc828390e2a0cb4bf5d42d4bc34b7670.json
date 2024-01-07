@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "select * from \"user\" where id = $1",
+  "query": "select * from \"group\" where group_name = $1;",
   "describe": {
     "columns": [
       {
@@ -15,26 +15,26 @@
       },
       {
         "ordinal": 2,
-        "name": "user_name",
+        "name": "group_name",
         "type_info": "Varchar"
       },
       {
         "ordinal": 3,
-        "name": "password_hash",
-        "type_info": "Varchar"
+        "name": "root",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4"
+        "Text"
       ]
     },
     "nullable": [
       false,
       false,
       false,
-      true
+      false
     ]
   },
-  "hash": "e84f7cb73189f9cb88a19dcd25e19ca76331b0d2f94b67829abbde165a71ab72"
+  "hash": "c54053ecbc8c9a42765bc4bc3081b19ffc828390e2a0cb4bf5d42d4bc34b7670"
 }

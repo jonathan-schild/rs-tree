@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\ninsert into \"user\" (uuid, user_name, password_hash)\n    values ($1, $2, $3) returning (id)",
+  "query": "insert into \"group\" (uuid, group_name, root) values ($1, $2, $3) returning (id);",
   "describe": {
     "columns": [
       {
@@ -13,12 +13,12 @@
       "Left": [
         "Uuid",
         "Varchar",
-        "Varchar"
+        "Bool"
       ]
     },
     "nullable": [
       false
     ]
   },
-  "hash": "2fa58b7605c9ec2d99ea62566b9d6b2600d1708d90b234d376e89406b27fb748"
+  "hash": "1b0fa1a48c24b44c3e29f780aeae93bb1772bf57dcf7ec4d51def1f343903655"
 }

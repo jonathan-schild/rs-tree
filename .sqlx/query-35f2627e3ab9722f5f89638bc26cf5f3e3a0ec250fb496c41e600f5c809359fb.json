@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\ninsert into \"link_tree\"\n    (uuid, name, short_url, redir_link, g_id)\n    VALUES ($1, $2, $3, $4, $5) returning (id)\n",
+  "query": "insert into \"link_tree\" (uuid, name, short_url, redir_link, g_id) VALUES ($1, $2, $3, $4, $5) returning (id);",
   "describe": {
     "columns": [
       {
@@ -22,5 +22,5 @@
       false
     ]
   },
-  "hash": "d2695e284c8a200ac611391b368ac6374d516384dc8aa3e85b6eb74dfd2bdda8"
+  "hash": "35f2627e3ab9722f5f89638bc26cf5f3e3a0ec250fb496c41e600f5c809359fb"
 }
